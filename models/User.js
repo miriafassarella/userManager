@@ -2,7 +2,7 @@ class User{
 
     constructor(name, gender, birth, country, email, password, photo, admin){
 
-        this.name = name;
+        this.name = name; //saving parameters in variables
         this.gender = gender;
         this.birth = birth;
         this.country = country;

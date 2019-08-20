@@ -17,41 +17,54 @@ class UserController{
 
             let values = this.getValues();
 
-           
-
-            this.getPhoto(content=>{
-
-                values.photo = content;
-
+           this.getPhoto().then(
+            (content)=>{
+                values.photo = content; //the content function refers to the result
+                    
                 this.addLine(values);
+                }, 
+            (e)=>{
+
+                console.error(e);//displays an error message and also generates in the console
+        });
 
             });
 
-           });
-
     }
 
-    getPhoto(callback){
+    getPhoto(){
 
-        let fileReader = new FileReader();
+        return new Promise((resolve, reject)=>{//performing an asynchronous activity
 
-        let elements = [...this.formEl.elements].filter(item=>{
+            let fileReader = new FileReader();
 
-             if(item.name === 'photo'){
-                 return item;
-             }
-
-        });
-        let file = elements[0].files[0];
-
-        fileReader.onload = ()=>{
+            let elements = [...this.formEl.elements].filter(item=>{//spread operator
+    
+                 if(item.name === 'photo'){
+                     return item;
+                 }
+    
+            });
+            let file = elements[0].files[0];//specifying the element to be loaded
             
-            callback(fileReader.result);
-        };
+            //happens later
+            fileReader.onload = ()=>{//loading copy
+                
+                resolve(fileReader.result); //the result refers to the copy of the image
+                
+            };
+            
+            fileReader.onerror = (e)=>{
 
-        fileReader.readAsDataURL(file);
+                reject(e);
 
-    }
+            }
+    
+            fileReader.readAsDataURL(file);//reading the file
+    
+         });
+
+        }
 
     getValues(){
 
