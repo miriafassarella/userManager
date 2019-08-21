@@ -17,7 +17,7 @@ class UserController{
 
             let values = this.getValues();
 
-           this.getPhoto().then(
+           this.getPhoto().then(//if all goes well do it
             (content)=>{
                 values.photo = content; //the content function refers to the result
                     
@@ -56,12 +56,15 @@ class UserController{
             
             fileReader.onerror = (e)=>{
 
-                reject(e);
+                reject(e);//when you finish loading the image do this
 
-            }
+            };
+            if(file){ 
     
             fileReader.readAsDataURL(file);//reading the file
-    
+            }else{
+                resolve('dist/img/boxed-bg.jpg');//attach this file when no file is selected
+            }
          });
 
         }
@@ -80,8 +83,10 @@ class UserController{
                     user[field.name] = field.value;
         
                 }
-        
-            }else{
+            }else if(field.name == "admin"){//treating the admin selector
+
+                    user[field.name] = field.checked;
+                }else{
         
                 user[field.name] = field.value;
             }
@@ -105,13 +110,15 @@ class UserController{
 
     addLine(dataUser){
 
-     this.tableEl.innerHTML = `
+        let tr = document.createElement('tr');
+
+     tr.innerHTML = `
     
     <tr>
     <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
     <td>${dataUser.name}</td>
     <td>${dataUser.email}</td>
-    <td>${dataUser.admin}</td>
+    <td>${(dataUser.admin) ? 'Sim' : 'Não'}</td>
     <td>${dataUser.birth}</td>
     <td>
         <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
@@ -120,7 +127,7 @@ class UserController{
     </tr>              
     `;
     
-    
+    this.tableEl.appendChild(tr);
     }
 
     
