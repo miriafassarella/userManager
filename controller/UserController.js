@@ -21,6 +21,8 @@ class UserController{
 
             let values = this.getValues();
 
+            if(!values) return false; //stopping form execution
+
            this.getPhoto().then(//if all goes well do it
             (content)=>{
                 values.photo = content; //the content function refers to the result
@@ -86,7 +88,7 @@ class UserController{
         [...this.formEl.elements].forEach(function(field, index){
 
             //Is this the field I'm looking for and isn't it empty?
-            if(['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value){
+            if(['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value){//form validation
 
                 field.parentElement.classList.add('has-error');
                 isValid = false;
@@ -132,6 +134,9 @@ class UserController{
 
         let tr = document.createElement('tr');
 
+        tr.dataset.user = JSON.stringify(dataUser);// dataset just keep string, so the JSON.stringfy convert object to string in JSON
+
+
      tr.innerHTML = `
     
     <tr>
@@ -148,8 +153,29 @@ class UserController{
     `;
     
     this.tableEl.appendChild(tr);
+
+        this.updateCount();
+
     }
 
+    updateCount(){ //counting the number of users
+
+        let numberUsers = 0;
+        let numberAdmin = 0;
+
+        [...this.tableEl.children].forEach(tr=>{
+
+                numberUsers++;
+
+            let user = JSON.parse(tr.dataset.user);
+
+            if(user._admin) numberAdmin++;
+
+        });
+
+        document.querySelector("#number-users").innerHTML = numberUsers;
+        document.querySelector("#number-users-admin").innerHTML = numberAdmin;
+    }
     
 
 }//closing the class
