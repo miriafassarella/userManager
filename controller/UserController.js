@@ -8,6 +8,7 @@ class UserController{
 
         this.onSubmit();
         this.onEdit();
+        this.selectAll();
 
     }
 
@@ -99,6 +100,8 @@ class UserController{
            this.getPhoto(this.formEl).then(//if all goes well do it
             (content)=>{
                 values.photo = content; //the content function refers to the result
+
+                this.insert(values);
                     
                 this.addLine(values);
 
@@ -203,9 +206,51 @@ class UserController{
 
     }//closing the getValues
 
+    getUsersStorage(){
+
+        let users = [];
+
+        if(sessionStorage.getItem("user")){
+
+            users = JSON.parse(sessionStorage.getItem("user"));
+
+        }
+
+        return users;
+    }
+
+    selectAll(){
+       let users = this.getUsersStorage();
+
+       users.forEach(dataUser=>{
+
+        let user = new User;
+
+        user.loadFromJSON(dataUser);
+
+        this.addLine(user);
+
+       })
+
+}
+
+    insert(data){
+
+       let users = this.getUsersStorage();
+
+        users.push(data);
+
+        //first enter the name of the key, second is the value
+        sessionStorage.setItem("user", JSON.stringify(users)); //writes data to the section.  If you close the browser, it no longer exists
+       
+
+    }
+
     addLine(dataUser){
 
         let tr = document.createElement('tr');
+
+       
 
         tr.dataset.user = JSON.stringify(dataUser);// dataset just keep string, so the JSON.stringfy convert object to string in JSON
 
@@ -220,7 +265,7 @@ class UserController{
     <td>${Utils.dateFormat(dataUser.register)}</td>
     <td>
         <button type="button" class="btn btn-edit btn-primary btn-xs btn-flat">Editar</button>
-        <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+        <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
     </td>
     </tr>              
     `;
@@ -232,8 +277,20 @@ class UserController{
     this.updateCount();
 
     }
+    
+    
 
     addEventsTr(tr){
+
+        tr.querySelector(".btn-delete").addEventListener("click", e=>{
+
+            if(confirm("Deseja realmente excluir?")) {//open a confirmation window
+
+                tr.remove(); // remove an item from array
+                this.updateCount();
+
+            }
+});
 
         tr.querySelector(".btn-edit").addEventListener("click", e=>{
 
