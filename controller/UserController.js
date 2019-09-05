@@ -210,9 +210,9 @@ class UserController{
 
         let users = [];
 
-        if(sessionStorage.getItem("user")){
+        if(localStorage.getItem("user")){
 
-            users = JSON.parse(sessionStorage.getItem("user"));
+            users = JSON.parse(localStorage.getItem("user"));
 
         }
 
@@ -241,7 +241,8 @@ class UserController{
         users.push(data);
 
         //first enter the name of the key, second is the value
-        sessionStorage.setItem("user", JSON.stringify(users)); //writes data to the section.  If you close the browser, it no longer exists
+        //sessionStorage.setItem("user", JSON.stringify(users)); writes data to the section.  If you close the browser, it no longer exists
+        localStorage.setItem("user", JSON.stringify(users)); //writes data to localStorage
        
 
     }
