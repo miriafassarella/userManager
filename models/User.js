@@ -2,6 +2,7 @@ class User{
 
     constructor(name, gender, birth, country, email, password, photo, admin){
 //the underline is just a convention
+        this._id;
         this._name = name; //saving parameters in variables
         this._gender = gender;
         this._birth = birth;
@@ -13,6 +14,9 @@ class User{
         this._register = new Date();
     }
 
+    get id(){
+        return this._id;
+    }
     get register(){
         return this._register;
     }
@@ -60,6 +64,67 @@ class User{
             
 
         }
+
+    }
+  static  getUsersStorage(){
+
+        let users = [];
+
+        if(localStorage.getItem("users")){
+
+            users = JSON.parse(localStorage.getItem("users"));
+
+        }
+
+        return users;
+    }
+
+    getNewId(){
+
+        if(!window.id) window.id = 0;
+
+        id++;
+
+        return id;
+
+    }
+
+    save(){
+
+        let users = User.getUsersStorage();
+
+        if(this.id > 0){
+
+            users.map(u=>{
+
+                if(u._id === this.id){
+
+                    u = this;
+
+                }
+
+                return u;
+
+            });
+
+          
+
+        }else{
+
+            this._id = this.getNewId();
+
+
+        users.push(this);
+
+        
+
+        }
+        //first enter the name of the key, second is the value
+        //sessionStorage.setItem("user", JSON.stringify(users)); writes data to the section.  If you close the browser, it no longer exists
+        localStorage.setItem("users", JSON.stringify(users)); //writes data to localStorage
+       
+
+
 
     }
 }

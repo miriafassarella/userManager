@@ -44,27 +44,16 @@ class UserController{
                 result._photo = content;
             }
 
-            tr.dataset.user = JSON.stringify(result);
+            let user = new User();
 
-            tr.innerHTML = `
-    
-            <tr>
-                <td><img src="${result._photo}" alt="User Image" class="img-circle img-sm"></td>
-                <td>${result._name}</td>
-                <td>${result._email}</td>
-                <td>${(result._admin) ? 'Sim' : 'Não'}</td>
-                <td>${Utils.dateFormat(result._register)}</td>
-                <td>
-                    <button type="button" class="btn btn-edit btn-primary btn-xs btn-flat">Editar</button>
-                    <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-                </td>
-            </tr>              
-            `;
-            this.addEventsTr(tr);
-        
+            user.loadFromJSON(result);
+
+            user.save();
+
+            this.getTr(user, tr);
+
             this.updateCount();
             
-
             this.formIdUpdateEl.reset();
 
             btn.disabled = false;
@@ -101,7 +90,7 @@ class UserController{
             (content)=>{
                 values.photo = content; //the content function refers to the result
 
-                this.insert(values);
+                values.save();
                     
                 this.addLine(values);
 
@@ -206,21 +195,10 @@ class UserController{
 
     }//closing the getValues
 
-    getUsersStorage(){
-
-        let users = [];
-
-        if(localStorage.getItem("user")){
-
-            users = JSON.parse(localStorage.getItem("user"));
-
-        }
-
-        return users;
-    }
+    
 
     selectAll(){
-       let users = this.getUsersStorage();
+       let users = User.getUsersStorage();
 
        users.forEach(dataUser=>{
 
@@ -229,57 +207,48 @@ class UserController{
         user.loadFromJSON(dataUser);
 
         this.addLine(user);
+        
 
        })
 
 }
 
-    insert(data){
-
-       let users = this.getUsersStorage();
-
-        users.push(data);
-
-        //first enter the name of the key, second is the value
-        //sessionStorage.setItem("user", JSON.stringify(users)); writes data to the section.  If you close the browser, it no longer exists
-        localStorage.setItem("user", JSON.stringify(users)); //writes data to localStorage
-       
-
-    }
+   
 
     addLine(dataUser){
 
-        let tr = document.createElement('tr');
+        let tr = this.getTr(dataUser);
 
-       
+        this.tableEl.appendChild(tr);
 
-        tr.dataset.user = JSON.stringify(dataUser);// dataset just keep string, so the JSON.stringfy convert object to string in JSON
-
-
-     tr.innerHTML = `
-    
-    <tr>
-    <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
-    <td>${dataUser.name}</td>
-    <td>${dataUser.email}</td>
-    <td>${(dataUser.admin) ? 'Sim' : 'Não'}</td>
-    <td>${Utils.dateFormat(dataUser.register)}</td>
-    <td>
-        <button type="button" class="btn btn-edit btn-primary btn-xs btn-flat">Editar</button>
-        <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
-    </td>
-    </tr>              
-    `;
-
-    this.addEventsTr(tr);
-    
-    this.tableEl.appendChild(tr);
-
-    this.updateCount();
+        this.updateCount();
 
     }
     
+   getTr(dataUser, tr = null){
+
+           if(tr === null) tr = document.createElement('tr');
+
+           tr.dataset.user = JSON.stringify(dataUser);// dataset just keep string, so the JSON.stringfy convert object to string in JSON
+
+            tr.innerHTML = `
+            
+            <tr>
+            <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
+            <td>${dataUser.name}</td>
+            <td>${dataUser.email}</td>
+            <td>${(dataUser.admin) ? 'Sim' : 'Não'}</td>
+            <td>${Utils.dateFormat(dataUser.register)}</td>
+            <td>
+                <button type="button" class="btn btn-edit btn-primary btn-xs btn-flat">Editar</button>
+                <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
+            </td>
+            </tr>              
+            `;
+            this.addEventsTr(tr);
     
+                return tr;
+   } 
 
     addEventsTr(tr){
 
