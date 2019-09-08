@@ -212,9 +212,6 @@ class UserController{
        })
 
 }
-
-   
-
     addLine(dataUser){
 
         let tr = this.getTr(dataUser);
@@ -255,6 +252,12 @@ class UserController{
         tr.querySelector(".btn-delete").addEventListener("click", e=>{
 
             if(confirm("Deseja realmente excluir?")) {//open a confirmation window
+
+                let user = new User();
+
+                user.loadFromJSON(JSON.parse(tr.dataset.user));
+
+                user.removeLocal();
 
                 tr.remove(); // remove an item from array
                 this.updateCount();
